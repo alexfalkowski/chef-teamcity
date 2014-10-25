@@ -71,7 +71,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision :chef_solo do |chef|
     chef.run_list = [
-      'recipe[chef-teamcity::default]'
+      'recipe[chef-teamcity::server]'
     ]
   end
 end
