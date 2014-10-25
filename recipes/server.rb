@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: chef-teamcity
-# Recipe:: default
+# Recipe:: server
 #
-# Copyright (C) 2014 YOUR_NAME
+# Copyright (C) 2014 Alex Falkowski
 #
 # All rights reserved - Do Not Redistribute
 #
