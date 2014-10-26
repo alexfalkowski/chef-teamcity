@@ -70,6 +70,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.berkshelf.except = []
 
   config.vm.provision :chef_solo do |chef|
+    chef.custom_config_path = 'solo.rb'
     chef.run_list = [
       'recipe[chef-teamcity::server]'
     ]
