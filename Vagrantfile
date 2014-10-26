@@ -79,10 +79,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         'password' => {
           'postgres' => '3175bce1d3201d16594cebf9d7eb3f9d'
         }
+      },
+      'java' => {
+        'install_flavor' => 'oracle',
+        'jdk_version' => 7,
+        'set_etc_environment' => true,
+        'oracle' => {
+          'accept_oracle_download_terms' => true
+        }
       }
     }
 
     chef.run_list = %w(
+      recipe[java]
       recipe[postgresql::server]
       recipe[chef-teamcity::server]
     )
