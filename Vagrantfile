@@ -78,6 +78,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         'enable_pgdg_yum' => true,
         'password' => {
           'postgres' => '3175bce1d3201d16594cebf9d7eb3f9d'
+        },
+        'server' => {
+          'packages' => ['postgresql93-jdbc']
         }
       },
       'java' => {
