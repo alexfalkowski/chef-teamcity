@@ -77,7 +77,7 @@ template TEAMCITY_INIT_LOCATION do
               teamcity_pidfile: TEAMCITY_PID_FILE,
               teamcity_service_name: TEAMCITY_SERVICE_NAME
             })
-  notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :immediately
+  notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :delayed
 end
 
 remote_file "#{TEAMCITY_JDBC_PATH}/#{TEAMCITY_JAR_NAME}" do
@@ -97,7 +97,7 @@ template TEAMCITY_DATABASE_PROPS do
               username: TEAMCITY_DB_USERNAME,
               password: TEAMCITY_DB_PASSWORD,
             })
-  notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :immediately
+  notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :delayed
 end
 
 service TEAMCITY_SERVICE_NAME do
