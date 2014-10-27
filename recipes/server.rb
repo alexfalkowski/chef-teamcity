@@ -8,7 +8,7 @@
 #
 
 TEAMCITY_VERSION = '8.1.5'
-TEAMCITY_USER_NAME = 'teamcity'
+TEAMCITY_USERNAME = 'teamcity'
 TEAMCITY_SRC_PATH = "/opt/TeamCity-#{TEAMCITY_VERSION}.tar.gz".freeze
 TEAMCITY_PATH = "/opt/TeamCity-#{TEAMCITY_VERSION}".freeze
 TEAMCITY_SERVER_EXECUTABLE = "#{TEAMCITY_PATH}/bin/teamcity-server.sh".freeze
@@ -24,18 +24,18 @@ TEAMCITY_JAR = 'postgresql93-jdbc.jar'.freeze
 TEAMCITY_EXECUTABLE_MODE = 0755
 TEAMCITY_READ_MODE = 0644
 
-group TEAMCITY_USER_NAME
+group TEAMCITY_USERNAME
 
-user TEAMCITY_USER_NAME do
-  gid TEAMCITY_USER_NAME
+user TEAMCITY_USERNAME do
+  gid TEAMCITY_USERNAME
   shell '/bin/bash'
   password '$1$ByY03mDX$4pk9wp9bC19yB6pxSoVB81'
 end
 
 remote_file TEAMCITY_SRC_PATH do
   source "http://download.jetbrains.com/teamcity/TeamCity-#{TEAMCITY_VERSION}.tar.gz"
-  owner TEAMCITY_USER_NAME
-  group TEAMCITY_USER_NAME
+  owner TEAMCITY_USERNAME
+  group TEAMCITY_USERNAME
   mode TEAMCITY_READ_MODE
 end
 
@@ -45,15 +45,15 @@ bash 'extract_teamcity' do
     mkdir -p #{TEAMCITY_PATH}
     tar xzf #{TEAMCITY_SRC_PATH} -C #{TEAMCITY_PATH}
     mv #{TEAMCITY_PATH}/*/* #{TEAMCITY_PATH}/
-    chown -R #{TEAMCITY_USER_NAME}.#{TEAMCITY_USER_NAME} #{TEAMCITY_PATH}
+    chown -R #{TEAMCITY_USERNAME}.#{TEAMCITY_USERNAME} #{TEAMCITY_PATH}
   EOH
   not_if { ::File.exists?(TEAMCITY_PATH) }
 end
 
 [TEAMCITY_DATA_PATH, TEAMCITY_LIB_PATH, TEAMCITY_JDBC_PATH, TEAMCITY_CONFIG_PATH].each do |p|
   directory p do
-    owner TEAMCITY_USER_NAME
-    group TEAMCITY_USER_NAME
+    owner TEAMCITY_USERNAME
+    group TEAMCITY_USERNAME
     recursive true
     mode TEAMCITY_EXECUTABLE_MODE
   end
@@ -65,7 +65,7 @@ template TEAMCITY_INIT_LOCATION do
   owner 'root'
   group 'root'
   variables({
-              teamcity_user_name: TEAMCITY_USER_NAME,
+              teamcity_user_name: TEAMCITY_USERNAME,
               teamcity_server_executable: TEAMCITY_SERVER_EXECUTABLE,
               teamcity_data_path: TEAMCITY_DATA_PATH,
               teamcity_pidfile: TEAMCITY_PID_FILE,
@@ -76,20 +76,20 @@ end
 
 remote_file "#{TEAMCITY_JDBC_PATH}/#{TEAMCITY_JAR}" do
   source "file:///usr/share/java/#{TEAMCITY_JAR}"
-  owner TEAMCITY_USER_NAME
-  group TEAMCITY_USER_NAME
+  owner TEAMCITY_USERNAME
+  group TEAMCITY_USERNAME
   mode TEAMCITY_READ_MODE
 end
 
 template TEAMCITY_DATABASE_PROPS do
   source 'database.properties.erb'
   mode TEAMCITY_READ_MODE
-  owner TEAMCITY_USER_NAME
-  group TEAMCITY_USER_NAME
+  owner TEAMCITY_USERNAME
+  group TEAMCITY_USERNAME
   variables({
-              database_name: TEAMCITY_USER_NAME,
-              username: TEAMCITY_USER_NAME,
-              password: TEAMCITY_USER_NAME,
+              database_name: TEAMCITY_USERNAME,
+              username: TEAMCITY_USERNAME,
+              password: node['postgresql']['password']['postgres'],
             })
   notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :immediately
 end
