@@ -10,3 +10,4 @@
 default['teamcity']['version'] = '8.1.5'
 default['teamcity']['username'] = 'teamcity'
 default['teamcity']['group'] = 'teamcity'
+default['teamcity']['service_name'] = 'teamcity'

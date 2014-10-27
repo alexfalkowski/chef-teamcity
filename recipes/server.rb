@@ -10,6 +10,7 @@
 TEAMCITY_VERSION = node['teamcity']['version'].freeze
 TEAMCITY_USERNAME = node['teamcity']['username'].freeze
 TEAMCITY_PASSWORD = node['teamcity']['password'].freeze
+TEAMCITY_SERVICE_NAME = node['teamcity']['service_name'].freeze.freeze
 TEAMCITY_GROUP = node['teamcity']['group'].freeze
 TEAMCITY_DB_USERNAME = node['teamcity']['server']['database']['username'].freeze
 TEAMCITY_DB_PASSWORD = node['teamcity']['server']['database']['password'].freeze
@@ -22,7 +23,6 @@ TEAMCITY_LIB_PATH = "#{TEAMCITY_DATA_PATH}/lib".freeze
 TEAMCITY_JDBC_PATH = "#{TEAMCITY_LIB_PATH}/jdbc".freeze
 TEAMCITY_CONFIG_PATH = "#{TEAMCITY_DATA_PATH}/config".freeze
 TEAMCITY_DATABASE_PROPS = "#{TEAMCITY_CONFIG_PATH}/database.properties".freeze
-TEAMCITY_SERVICE_NAME = "teamcity-#{TEAMCITY_VERSION}".freeze
 TEAMCITY_INIT_LOCATION = "/etc/init.d/#{TEAMCITY_SERVICE_NAME}".freeze
 TEAMCITY_PID_FILE = "#{TEAMCITY_PATH}/logs/#{TEAMCITY_SERVICE_NAME}.pid".freeze
 TEAMCITY_JAR_URI = node['teamcity']['server']['database']['jar']
