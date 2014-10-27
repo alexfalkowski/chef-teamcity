@@ -29,6 +29,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # network interface) by any external networks.
   # config.vm.network :private_network, type: 'dhcp'
 
+  config.vm.network :forwarded_port, guest: 8111, host: 8111
+
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
@@ -79,7 +81,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         'password' => {
           'postgres' => '3175bce1d3201d16594cebf9d7eb3f9d'
         },
-        'server' => {
+        'contrib' => {
           'packages' => ['postgresql93-jdbc']
         }
       },
@@ -95,7 +97,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     chef.run_list = %w(
       recipe[java]
-      recipe[postgresql::server]
+      recipe[postgresql::contrib]
       recipe[chef-teamcity::server]
     )
   end
