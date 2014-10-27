@@ -75,6 +75,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     chef.custom_config_path = 'solo.rb'
 
     chef.json = {
+      'teamcity' => {
+        'password' => '$1$ByY03mDX$4pk9wp9bC19yB6pxSoVB81',
+        'server' => {
+          'database' => {
+            'username' => 'postgres',
+            'password' => '3175bce1d3201d16594cebf9d7eb3f9d',
+            'jar' => 'file:///usr/share/java/postgresql93-jdbc.jar',
+            'connection_url' => 'jdbc\:postgresql\:///postgres'
+          }
+        }
+      },
       'postgresql' => {
         'version' => '9.3',
         'enable_pgdg_yum' => true,

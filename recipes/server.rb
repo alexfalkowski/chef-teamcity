@@ -7,8 +7,13 @@
 # All rights reserved - Do Not Redistribute
 #
 
-TEAMCITY_VERSION = '8.1.5'
-TEAMCITY_USERNAME = 'teamcity'
+TEAMCITY_VERSION = node['teamcity']['version'].freeze
+TEAMCITY_USERNAME = node['teamcity']['username'].freeze
+TEAMCITY_PASSWORD = node['teamcity']['password'].freeze
+TEAMCITY_GROUP = node['teamcity']['group'].freeze
+TEAMCITY_DB_USERNAME = node['teamcity']['server']['database']['username'].freeze
+TEAMCITY_DB_PASSWORD = node['teamcity']['server']['database']['password'].freeze
+TEAMCITY_DB_CONNECTION_URL = node['teamcity']['server']['database']['connection_url'].freeze
 TEAMCITY_SRC_PATH = "/opt/TeamCity-#{TEAMCITY_VERSION}.tar.gz".freeze
 TEAMCITY_PATH = "/opt/TeamCity-#{TEAMCITY_VERSION}".freeze
 TEAMCITY_SERVER_EXECUTABLE = "#{TEAMCITY_PATH}/bin/teamcity-server.sh".freeze
@@ -20,7 +25,8 @@ TEAMCITY_DATABASE_PROPS = "#{TEAMCITY_CONFIG_PATH}/database.properties".freeze
 TEAMCITY_SERVICE_NAME = "teamcity-#{TEAMCITY_VERSION}".freeze
 TEAMCITY_INIT_LOCATION = "/etc/init.d/#{TEAMCITY_SERVICE_NAME}".freeze
 TEAMCITY_PID_FILE = "#{TEAMCITY_PATH}/logs/#{TEAMCITY_SERVICE_NAME}.pid".freeze
-TEAMCITY_JAR = 'postgresql93-jdbc.jar'.freeze
+TEAMCITY_JAR_URI = node['teamcity']['server']['database']['jar']
+TEAMCITY_JAR_NAME = File.basename(URI.parse(TEAMCITY_JAR_URI).path).freeze
 TEAMCITY_EXECUTABLE_MODE = 0755
 TEAMCITY_READ_MODE = 0644
 
@@ -29,13 +35,13 @@ group TEAMCITY_USERNAME
 user TEAMCITY_USERNAME do
   gid TEAMCITY_USERNAME
   shell '/bin/bash'
-  password '$1$ByY03mDX$4pk9wp9bC19yB6pxSoVB81'
+  password TEAMCITY_PASSWORD
 end
 
 remote_file TEAMCITY_SRC_PATH do
   source "http://download.jetbrains.com/teamcity/TeamCity-#{TEAMCITY_VERSION}.tar.gz"
   owner TEAMCITY_USERNAME
-  group TEAMCITY_USERNAME
+  group TEAMCITY_GROUP
   mode TEAMCITY_READ_MODE
 end
 
@@ -45,7 +51,7 @@ bash 'extract_teamcity' do
     mkdir -p #{TEAMCITY_PATH}
     tar xzf #{TEAMCITY_SRC_PATH} -C #{TEAMCITY_PATH}
     mv #{TEAMCITY_PATH}/*/* #{TEAMCITY_PATH}/
-    chown -R #{TEAMCITY_USERNAME}.#{TEAMCITY_USERNAME} #{TEAMCITY_PATH}
+    chown -R #{TEAMCITY_USERNAME}.#{TEAMCITY_GROUP} #{TEAMCITY_PATH}
   EOH
   not_if { ::File.exists?(TEAMCITY_PATH) }
 end
@@ -53,7 +59,7 @@ end
 [TEAMCITY_DATA_PATH, TEAMCITY_LIB_PATH, TEAMCITY_JDBC_PATH, TEAMCITY_CONFIG_PATH].each do |p|
   directory p do
     owner TEAMCITY_USERNAME
-    group TEAMCITY_USERNAME
+    group TEAMCITY_GROUP
     recursive true
     mode TEAMCITY_EXECUTABLE_MODE
   end
@@ -74,10 +80,10 @@ template TEAMCITY_INIT_LOCATION do
   notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :immediately
 end
 
-remote_file "#{TEAMCITY_JDBC_PATH}/#{TEAMCITY_JAR}" do
-  source "file:///usr/share/java/#{TEAMCITY_JAR}"
+remote_file "#{TEAMCITY_JDBC_PATH}/#{TEAMCITY_JAR_NAME}" do
+  source TEAMCITY_JAR_URI
   owner TEAMCITY_USERNAME
-  group TEAMCITY_USERNAME
+  group TEAMCITY_GROUP
   mode TEAMCITY_READ_MODE
 end
 
@@ -87,9 +93,9 @@ template TEAMCITY_DATABASE_PROPS do
   owner TEAMCITY_USERNAME
   group TEAMCITY_USERNAME
   variables({
-              database_name: TEAMCITY_USERNAME,
-              username: TEAMCITY_USERNAME,
-              password: node['postgresql']['password']['postgres'],
+              url: TEAMCITY_DB_CONNECTION_URL,
+              username: TEAMCITY_DB_USERNAME,
+              password: TEAMCITY_DB_PASSWORD,
             })
   notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :immediately
 end
