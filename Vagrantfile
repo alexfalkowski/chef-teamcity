@@ -71,8 +71,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision :chef_solo do |chef|
     chef.custom_config_path = 'solo.rb'
-    chef.run_list = [
-      'recipe[chef-teamcity::server]'
-    ]
+
+    chef.json = {
+      'postgresql' => {
+        'version' => '9.3',
+        'enable_pgdg_yum' => true,
+        'password' => {
+          'postgres' => '3175bce1d3201d16594cebf9d7eb3f9d'
+        }
+      }
+    }
+
+    chef.run_list = %w(
+      recipe[postgresql::server]
+      recipe[chef-teamcity::server]
+    )
   end
 end
