@@ -18,7 +18,7 @@
 TEAMCITY_VERSION = node['teamcity']['version'].freeze
 TEAMCITY_USERNAME = node['teamcity']['username'].freeze
 TEAMCITY_PASSWORD = node['teamcity']['password'].freeze
-TEAMCITY_SERVICE_NAME = node['teamcity']['service_name'].freeze.freeze
+TEAMCITY_SERVICE_NAME = node['teamcity']['service_name'].freeze
 TEAMCITY_GROUP = node['teamcity']['group'].freeze
 TEAMCITY_DB_USERNAME = node['teamcity']['server']['database']['username'].freeze
 TEAMCITY_DB_PASSWORD = node['teamcity']['server']['database']['password'].freeze
