@@ -18,15 +18,19 @@ TEAMCITY_DB_CONNECTION_URL = node['teamcity']['server']['database']['connection_
 TEAMCITY_PATH = "/opt/TeamCity-#{TEAMCITY_VERSION}".freeze
 TEAMCITY_SRC_PATH = "#{TEAMCITY_PATH}.tar.gz".freeze
 TEAMCITY_SERVER_EXECUTABLE = "#{TEAMCITY_PATH}/bin/teamcity-server.sh".freeze
+TEAMCITY_BIN_PATH = "#{TEAMCITY_PATH}/bin".freeze
 TEAMCITY_DATA_PATH = "#{TEAMCITY_PATH}/.BuildServer".freeze
 TEAMCITY_LIB_PATH = "#{TEAMCITY_DATA_PATH}/lib".freeze
 TEAMCITY_JDBC_PATH = "#{TEAMCITY_LIB_PATH}/jdbc".freeze
 TEAMCITY_CONFIG_PATH = "#{TEAMCITY_DATA_PATH}/config".freeze
-TEAMCITY_DATABASE_PROPS = "#{TEAMCITY_CONFIG_PATH}/database.properties".freeze
+TEAMCITY_BACKUP_PATH = "#{TEAMCITY_DATA_PATH}/backup".freeze
+TEAMCITY_DATABASE_PROPS_NAME = 'database.properties'.freeze
+TEAMCITY_DATABASE_PROPS_PATH = "#{TEAMCITY_CONFIG_PATH}/#{TEAMCITY_DATABASE_PROPS_NAME}".freeze
 TEAMCITY_INIT_LOCATION = "/etc/init.d/#{TEAMCITY_SERVICE_NAME}".freeze
 TEAMCITY_PID_FILE = "#{TEAMCITY_PATH}/logs/#{TEAMCITY_SERVICE_NAME}.pid".freeze
-TEAMCITY_JAR_URI = node['teamcity']['server']['database']['jar']
-TEAMCITY_JAR_NAME = File.basename(URI.parse(TEAMCITY_JAR_URI).path).freeze
+TEAMCITY_JAR_URI = node['teamcity']['server']['database']['jar'].freeze
+TEAMCITY_BACKUP_FILE = node['teamcity']['server']['backup']
+TEAMCITY_JAR_NAME = ::File.basename(URI.parse(TEAMCITY_JAR_URI).path).freeze
 TEAMCITY_EXECUTABLE_MODE = 0755
 TEAMCITY_READ_MODE = 0644
 
@@ -56,7 +60,7 @@ bash 'extract_teamcity' do
   not_if { ::File.exists?(TEAMCITY_PATH) }
 end
 
-[TEAMCITY_DATA_PATH, TEAMCITY_LIB_PATH, TEAMCITY_JDBC_PATH, TEAMCITY_CONFIG_PATH].each do |p|
+[TEAMCITY_DATA_PATH, TEAMCITY_LIB_PATH, TEAMCITY_JDBC_PATH, TEAMCITY_CONFIG_PATH, TEAMCITY_BACKUP_PATH].each do |p|
   directory p do
     owner TEAMCITY_USERNAME
     group TEAMCITY_GROUP
@@ -87,7 +91,43 @@ remote_file "#{TEAMCITY_JDBC_PATH}/#{TEAMCITY_JAR_NAME}" do
   mode TEAMCITY_READ_MODE
 end
 
-template TEAMCITY_DATABASE_PROPS do
+if TEAMCITY_BACKUP_FILE
+  backup_file = ::File.basename(URI.parse(TEAMCITY_BACKUP_FILE).path).freeze
+  backup_path = ::File.join(TEAMCITY_BACKUP_PATH, backup_file).freeze
+  home_path = "/home/#{TEAMCITY_USERNAME}".freeze
+  home_database_props = ::File.join(home_path, TEAMCITY_DATABASE_PROPS_NAME).freeze
+
+  remote_file backup_path do
+    source TEAMCITY_BACKUP_FILE
+    owner TEAMCITY_USERNAME
+    group TEAMCITY_GROUP
+    mode TEAMCITY_READ_MODE
+    not_if { ::File.exists?(backup_path) }
+  end
+
+  template home_database_props do
+    source 'database.properties.erb'
+    mode TEAMCITY_READ_MODE
+    owner TEAMCITY_USERNAME
+    group TEAMCITY_USERNAME
+    variables({
+                url: TEAMCITY_DB_CONNECTION_URL,
+                username: TEAMCITY_DB_USERNAME,
+                password: TEAMCITY_DB_PASSWORD,
+              })
+  end
+
+  bash 'restore' do
+    user TEAMCITY_USERNAME
+    code <<-EOH
+      #{TEAMCITY_BIN_PATH}/maintainDB.sh restore -F #{backup_file} -A #{TEAMCITY_DATA_PATH} -T #{home_database_props}
+      rm -f #{backup_path}
+    EOH
+    only_if { ::File.exists?(backup_path) }
+  end
+end
+
+template TEAMCITY_DATABASE_PROPS_PATH do
   source 'database.properties.erb'
   mode TEAMCITY_READ_MODE
   owner TEAMCITY_USERNAME
