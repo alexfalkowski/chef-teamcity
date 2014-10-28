@@ -75,11 +75,23 @@ Gives you the ability to create TeamCity server/agent
     <td>The URI of the database JAR file.</td>
     <td><tt></tt></td>
   </tr>
+  <tr>
+    <td><tt>['teamcity']['agent']['name']</tt></td>
+    <td>String</td>
+    <td>The agent name.</td>
+    <td><tt></tt></td>
+  </tr>
+  <tr>
+    <td><tt>['teamcity']['agent']['server_uri']</tt></td>
+    <td>String</td>
+    <td>The URI of the TeamCity server.</td>
+    <td><tt></tt></td>
+  </tr>
 </table>
 
 ## Usage
 
-### chef-teamcity::default
+### chef-teamcity::server
 
 Include `chef-teamcity` in your node's `run_list`:
 
@@ -87,6 +99,18 @@ Include `chef-teamcity` in your node's `run_list`:
 {
   "run_list": [
     "recipe[chef-teamcity::server]"
+  ]
+}
+```
+
+### chef-teamcity::agent
+
+Include `chef-teamcity` in your node's `run_list`:
+
+```json
+{
+  "run_list": [
+    "recipe[chef-teamcity::agent]"
   ]
 }
 ```
