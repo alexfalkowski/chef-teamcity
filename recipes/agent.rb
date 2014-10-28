@@ -22,6 +22,8 @@ TEAMCITY_SERVICE_NAME = node['teamcity']['service_name'].freeze
 TEAMCITY_GROUP = node['teamcity']['group'].freeze
 TEAMCITY_PATH = "/opt/TeamCity-#{TEAMCITY_VERSION}".freeze
 TEAMCITY_SRC_PATH = "#{TEAMCITY_PATH}.zip".freeze
+TEAMCITY_INIT_LOCATION = "/etc/init.d/#{TEAMCITY_SERVICE_NAME}".freeze
+TEAMCITY_PID_FILE = "#{TEAMCITY_PATH}/logs/buildAgent.pid".freeze
 TEAMCITY_EXECUTABLE_MODE = 0755
 TEAMCITY_READ_MODE = 0644
 
@@ -29,9 +31,10 @@ TEAMCITY_AGENT_NAME = node['teamcity']['agent']['name'].freeze
 TEAMCITY_AGENT_SERVER_URI = node['teamcity']['agent']['server_uri'].freeze
 TEAMCITY_AGENT_FILE = 'buildAgent.zip'.freeze
 TEAMCITY_AGENT_URI = ::URI.join(TEAMCITY_AGENT_SERVER_URI, "update/#{TEAMCITY_AGENT_FILE}").to_s.freeze
-TEAMCITY_AGENT_SRC_PATH = ::File.join(TEAMCITY_PATH, TEAMCITY_AGENT_FILE)
-TEAMCITY_AGENT_CONFIG_PATH = "#{TEAMCITY_PATH}/conf"
-TEAMCITY_AGENT_PROPERTIES = "#{TEAMCITY_AGENT_CONFIG_PATH}/buildAgent.properties"
+TEAMCITY_AGENT_SRC_PATH = ::File.join(TEAMCITY_PATH, TEAMCITY_AGENT_FILE).freeze
+TEAMCITY_AGENT_CONFIG_PATH = "#{TEAMCITY_PATH}/conf".freeze
+TEAMCITY_AGENT_PROPERTIES = "#{TEAMCITY_AGENT_CONFIG_PATH}/buildAgent.properties".freeze
+TEAMCITY_AGENT_EXECUTABLE = "#{TEAMCITY_PATH}/bin/agent.sh".freeze
 
 group TEAMCITY_USERNAME
 
@@ -61,6 +64,12 @@ bash 'extract_teamcity' do
   not_if { ::File.exists?(TEAMCITY_PATH) }
 end
 
+file TEAMCITY_AGENT_EXECUTABLE do
+  owner TEAMCITY_USERNAME
+  group TEAMCITY_GROUP
+  mode TEAMCITY_EXECUTABLE_MODE
+end
+
 [TEAMCITY_AGENT_CONFIG_PATH].each do |p|
   directory p do
     owner TEAMCITY_USERNAME
@@ -79,4 +88,24 @@ template TEAMCITY_AGENT_PROPERTIES do
               server_uri: TEAMCITY_AGENT_SERVER_URI,
               name: TEAMCITY_AGENT_NAME
             })
+  notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :delayed
+end
+
+template TEAMCITY_INIT_LOCATION do
+  source 'teamcity_agent_init.erb'
+  mode TEAMCITY_EXECUTABLE_MODE
+  owner 'root'
+  group 'root'
+  variables({
+              teamcity_user_name: TEAMCITY_USERNAME,
+              teamcity_executable: TEAMCITY_AGENT_EXECUTABLE,
+              teamcity_pidfile: TEAMCITY_PID_FILE,
+              teamcity_service_name: TEAMCITY_SERVICE_NAME
+            })
+  notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :delayed
+end
+
+service TEAMCITY_SERVICE_NAME do
+  supports start: true, stop: true, restart: true, status: true
+  action [:enable, :start]
 end

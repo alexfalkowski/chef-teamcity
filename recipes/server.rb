@@ -22,6 +22,8 @@ TEAMCITY_SERVICE_NAME = node['teamcity']['service_name'].freeze
 TEAMCITY_GROUP = node['teamcity']['group'].freeze
 TEAMCITY_PATH = "/opt/TeamCity-#{TEAMCITY_VERSION}".freeze
 TEAMCITY_SRC_PATH = "#{TEAMCITY_PATH}.tar.gz".freeze
+TEAMCITY_INIT_LOCATION = "/etc/init.d/#{TEAMCITY_SERVICE_NAME}".freeze
+TEAMCITY_PID_FILE = "#{TEAMCITY_PATH}/logs/#{TEAMCITY_SERVICE_NAME}.pid".freeze
 TEAMCITY_EXECUTABLE_MODE = 0755
 TEAMCITY_READ_MODE = 0644
 
@@ -37,8 +39,6 @@ TEAMCITY_CONFIG_PATH = "#{TEAMCITY_DATA_PATH}/config".freeze
 TEAMCITY_BACKUP_PATH = "#{TEAMCITY_DATA_PATH}/backup".freeze
 TEAMCITY_DATABASE_PROPS_NAME = 'database.properties'.freeze
 TEAMCITY_DATABASE_PROPS_PATH = "#{TEAMCITY_CONFIG_PATH}/#{TEAMCITY_DATABASE_PROPS_NAME}".freeze
-TEAMCITY_INIT_LOCATION = "/etc/init.d/#{TEAMCITY_SERVICE_NAME}".freeze
-TEAMCITY_PID_FILE = "#{TEAMCITY_PATH}/logs/#{TEAMCITY_SERVICE_NAME}.pid".freeze
 TEAMCITY_JAR_URI = node['teamcity']['server']['database']['jar'].freeze
 TEAMCITY_BACKUP_FILE = node['teamcity']['server']['backup']
 TEAMCITY_JAR_NAME = ::File.basename(URI.parse(TEAMCITY_JAR_URI).path).freeze
@@ -76,21 +76,6 @@ end
     recursive true
     mode TEAMCITY_EXECUTABLE_MODE
   end
-end
-
-template TEAMCITY_INIT_LOCATION do
-  source 'teamcity_server_init.erb'
-  mode TEAMCITY_EXECUTABLE_MODE
-  owner 'root'
-  group 'root'
-  variables({
-              teamcity_user_name: TEAMCITY_USERNAME,
-              teamcity_server_executable: TEAMCITY_SERVER_EXECUTABLE,
-              teamcity_data_path: TEAMCITY_DATA_PATH,
-              teamcity_pidfile: TEAMCITY_PID_FILE,
-              teamcity_service_name: TEAMCITY_SERVICE_NAME
-            })
-  notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :delayed
 end
 
 remote_file "#{TEAMCITY_JDBC_PATH}/#{TEAMCITY_JAR_NAME}" do
@@ -145,6 +130,21 @@ template TEAMCITY_DATABASE_PROPS_PATH do
               url: TEAMCITY_DB_CONNECTION_URL,
               username: TEAMCITY_DB_USERNAME,
               password: TEAMCITY_DB_PASSWORD,
+            })
+  notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :delayed
+end
+
+template TEAMCITY_INIT_LOCATION do
+  source 'teamcity_server_init.erb'
+  mode TEAMCITY_EXECUTABLE_MODE
+  owner 'root'
+  group 'root'
+  variables({
+              teamcity_user_name: TEAMCITY_USERNAME,
+              teamcity_server_executable: TEAMCITY_SERVER_EXECUTABLE,
+              teamcity_data_path: TEAMCITY_DATA_PATH,
+              teamcity_pidfile: TEAMCITY_PID_FILE,
+              teamcity_service_name: TEAMCITY_SERVICE_NAME
             })
   notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :delayed
 end
