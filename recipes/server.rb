@@ -20,11 +20,14 @@ TEAMCITY_USERNAME = node['teamcity']['username'].freeze
 TEAMCITY_PASSWORD = node['teamcity']['password'].freeze
 TEAMCITY_SERVICE_NAME = node['teamcity']['service_name'].freeze
 TEAMCITY_GROUP = node['teamcity']['group'].freeze
+TEAMCITY_PATH = "/opt/TeamCity-#{TEAMCITY_VERSION}".freeze
+TEAMCITY_SRC_PATH = "#{TEAMCITY_PATH}.tar.gz".freeze
+TEAMCITY_EXECUTABLE_MODE = 0755
+TEAMCITY_READ_MODE = 0644
+
 TEAMCITY_DB_USERNAME = node['teamcity']['server']['database']['username'].freeze
 TEAMCITY_DB_PASSWORD = node['teamcity']['server']['database']['password'].freeze
 TEAMCITY_DB_CONNECTION_URL = node['teamcity']['server']['database']['connection_url'].freeze
-TEAMCITY_PATH = "/opt/TeamCity-#{TEAMCITY_VERSION}".freeze
-TEAMCITY_SRC_PATH = "#{TEAMCITY_PATH}.tar.gz".freeze
 TEAMCITY_SERVER_EXECUTABLE = "#{TEAMCITY_PATH}/bin/teamcity-server.sh".freeze
 TEAMCITY_BIN_PATH = "#{TEAMCITY_PATH}/bin".freeze
 TEAMCITY_DATA_PATH = "#{TEAMCITY_PATH}/.BuildServer".freeze
@@ -39,8 +42,6 @@ TEAMCITY_PID_FILE = "#{TEAMCITY_PATH}/logs/#{TEAMCITY_SERVICE_NAME}.pid".freeze
 TEAMCITY_JAR_URI = node['teamcity']['server']['database']['jar'].freeze
 TEAMCITY_BACKUP_FILE = node['teamcity']['server']['backup']
 TEAMCITY_JAR_NAME = ::File.basename(URI.parse(TEAMCITY_JAR_URI).path).freeze
-TEAMCITY_EXECUTABLE_MODE = 0755
-TEAMCITY_READ_MODE = 0644
 
 group TEAMCITY_USERNAME
 
