@@ -1,7 +1,7 @@
 name 'chef-teamcity'
 maintainer 'Alex Falkowski'
 maintainer_email 'alexrfalkowski@gmail.com'
-license 'All rights reserved'
+license 'Apache 2.0'
 description 'Installs/Configures TeamCity agent/server.'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version '0.1.0'
