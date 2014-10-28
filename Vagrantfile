@@ -29,6 +29,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # network interface) by any external networks.
   # config.vm.network :private_network, type: 'dhcp'
 
+  config.vm.network :forwarded_port, guest: 8111, host: 8111
+
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
@@ -70,8 +72,44 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.berkshelf.except = []
 
   config.vm.provision :chef_solo do |chef|
-    chef.run_list = [
-      'recipe[chef-teamcity::server]'
-    ]
+    chef.custom_config_path = 'solo.rb'
+
+    chef.json = {
+      'teamcity' => {
+        'password' => '$1$ByY03mDX$4pk9wp9bC19yB6pxSoVB81',
+        'server' => {
+          'database' => {
+            'username' => 'postgres',
+            'password' => '3175bce1d3201d16594cebf9d7eb3f9d',
+            'jar' => 'file:///usr/share/java/postgresql93-jdbc.jar',
+            'connection_url' => 'jdbc\:postgresql\:///postgres'
+          }
+        }
+      },
+      'postgresql' => {
+        'version' => '9.3',
+        'enable_pgdg_yum' => true,
+        'password' => {
+          'postgres' => '3175bce1d3201d16594cebf9d7eb3f9d'
+        },
+        'contrib' => {
+          'packages' => ['postgresql93-jdbc']
+        }
+      },
+      'java' => {
+        'install_flavor' => 'oracle',
+        'jdk_version' => 7,
+        'set_etc_environment' => true,
+        'oracle' => {
+          'accept_oracle_download_terms' => true
+        }
+      }
+    }
+
+    chef.run_list = %w(
+      recipe[java]
+      recipe[postgresql::contrib]
+      recipe[chef-teamcity::server]
+    )
   end
 end

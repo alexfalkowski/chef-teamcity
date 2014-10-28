@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+# chkconfig: 235 10 90
+# description: TeamCity startup script
+#
+
+TEAMCITY_SERVICE_NAME=<%= @teamcity_service_name %>
+TEAMCITY_USER=<%= @teamcity_user_name %>
+TEAMCITY_SERVER=<%= @teamcity_server_executable %>
+TEAMCITY_DATA_PATH=<%= @teamcity_data_path %>
+TEAMCITY_PIDFILE="<%= @teamcity_pidfile %>"
+
+. /etc/rc.d/init.d/functions
+
+start() {
+  sudo -u $TEAMCITY_USER -s -- sh -c "CATALINA_PID=$TEAMCITY_PIDFILE TEAMCITY_SERVER_OPTS=$TEAMCITY_SERVER_OPTS TEAMCITY_DATA_PATH=$TEAMCITY_DATA_PATH $TEAMCITY_SERVER start"
+}
+
+stop() {
+  sudo -u $TEAMCITY_USER -s -- sh -c "CATALINA_PID=$TEAMCITY_PIDFILE TEAMCITY_SERVER_OPTS=$TEAMCITY_SERVER_OPTS TEAMCITY_DATA_PATH=$TEAMCITY_DATA_PATH $TEAMCITY_SERVER stop"
+}
+
+restart() {
+  stop
+  start
+}
+
+script_result=0
+
+case "$1" in
+  start)
+    start
+    ;;
+  status)
+    status -p $TEAMCITY_PIDFILE $TEAMCITY_SERVICE_NAME
+    script_result=$?
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    restart
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+    script_result=1
+  ;;
+esac
+
+exit $script_result
