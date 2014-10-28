@@ -25,10 +25,13 @@ TEAMCITY_SRC_PATH = "#{TEAMCITY_PATH}.zip".freeze
 TEAMCITY_EXECUTABLE_MODE = 0755
 TEAMCITY_READ_MODE = 0644
 
-TEAMCITY_SEVER_HOST = node['teamcity']['agent']['server_uri'].freeze
-TEAMCITY_BUILD_AGENT_NAME = 'buildAgent.zip'.freeze
-TEAMCITY_BUILD_AGENT_URI = ::URI.join(TEAMCITY_SEVER_HOST, "update/#{TEAMCITY_BUILD_AGENT_NAME}").to_s.freeze
-TEAMCITY_AGENT_SRC_PATH = ::File.join(TEAMCITY_PATH, TEAMCITY_BUILD_AGENT_NAME)
+TEAMCITY_AGENT_NAME = node['teamcity']['agent']['name'].freeze
+TEAMCITY_AGENT_SERVER_URI = node['teamcity']['agent']['server_uri'].freeze
+TEAMCITY_AGENT_FILE = 'buildAgent.zip'.freeze
+TEAMCITY_AGENT_URI = ::URI.join(TEAMCITY_AGENT_SERVER_URI, "update/#{TEAMCITY_AGENT_FILE}").to_s.freeze
+TEAMCITY_AGENT_SRC_PATH = ::File.join(TEAMCITY_PATH, TEAMCITY_AGENT_FILE)
+TEAMCITY_AGENT_CONFIG_PATH = "#{TEAMCITY_PATH}/conf"
+TEAMCITY_AGENT_PROPERTIES = "#{TEAMCITY_AGENT_CONFIG_PATH}/buildAgent.properties"
 
 group TEAMCITY_USERNAME
 
@@ -41,7 +44,7 @@ end
 package 'unzip'
 
 remote_file TEAMCITY_SRC_PATH do
-  source TEAMCITY_BUILD_AGENT_URI
+  source TEAMCITY_AGENT_URI
   owner TEAMCITY_USERNAME
   group TEAMCITY_GROUP
   mode TEAMCITY_READ_MODE
@@ -56,4 +59,24 @@ bash 'extract_teamcity' do
     rm -f #{TEAMCITY_SRC_PATH}
   EOH
   not_if { ::File.exists?(TEAMCITY_PATH) }
+end
+
+[TEAMCITY_AGENT_CONFIG_PATH].each do |p|
+  directory p do
+    owner TEAMCITY_USERNAME
+    group TEAMCITY_GROUP
+    recursive true
+    mode TEAMCITY_EXECUTABLE_MODE
+  end
+end
+
+template TEAMCITY_AGENT_PROPERTIES do
+  source 'buildAgent.properties.erb'
+  mode TEAMCITY_READ_MODE
+  owner TEAMCITY_USERNAME
+  group TEAMCITY_USERNAME
+  variables({
+              server_uri: TEAMCITY_AGENT_SERVER_URI,
+              name: TEAMCITY_AGENT_NAME
+            })
 end

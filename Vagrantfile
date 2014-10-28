@@ -54,6 +54,7 @@ BOXES = [
         'teamcity' => {
           'password' => '$1$ByY03mDX$4pk9wp9bC19yB6pxSoVB81',
           'agent' => {
+            'name' => 'agent01',
             'server_uri' => 'http://192.168.80.10:8111'
           }
         },
