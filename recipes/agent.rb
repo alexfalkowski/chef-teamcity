@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+include_recipe 'java'
+
 TEAMCITY_VERSION = node['teamcity']['version'].freeze
 TEAMCITY_USERNAME = node['teamcity']['username'].freeze
 TEAMCITY_PASSWORD = node['teamcity']['password'].freeze
