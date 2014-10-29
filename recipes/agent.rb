@@ -36,10 +36,10 @@ TEAMCITY_AGENT_CONFIG_PATH = "#{TEAMCITY_PATH}/conf".freeze
 TEAMCITY_AGENT_PROPERTIES = "#{TEAMCITY_AGENT_CONFIG_PATH}/buildAgent.properties".freeze
 TEAMCITY_AGENT_EXECUTABLE = "#{TEAMCITY_PATH}/bin/agent.sh".freeze
 
-group TEAMCITY_USERNAME
+group TEAMCITY_GROUP
 
 user TEAMCITY_USERNAME do
-  gid TEAMCITY_USERNAME
+  gid TEAMCITY_GROUP
   shell '/bin/bash'
   password TEAMCITY_PASSWORD
 end
@@ -83,7 +83,7 @@ template TEAMCITY_AGENT_PROPERTIES do
   source 'buildAgent.properties.erb'
   mode TEAMCITY_READ_MODE
   owner TEAMCITY_USERNAME
-  group TEAMCITY_USERNAME
+  group TEAMCITY_GROUP
   variables({
               server_uri: TEAMCITY_AGENT_SERVER_URI,
               name: TEAMCITY_AGENT_NAME

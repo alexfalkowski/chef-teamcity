@@ -43,10 +43,10 @@ TEAMCITY_JAR_URI = node['teamcity']['server']['database']['jar'].freeze
 TEAMCITY_BACKUP_FILE = node['teamcity']['server']['backup']
 TEAMCITY_JAR_NAME = ::File.basename(URI.parse(TEAMCITY_JAR_URI).path).freeze
 
-group TEAMCITY_USERNAME
+group TEAMCITY_GROUP
 
 user TEAMCITY_USERNAME do
-  gid TEAMCITY_USERNAME
+  gid TEAMCITY_GROUP
   shell '/bin/bash'
   password TEAMCITY_PASSWORD
 end
@@ -103,7 +103,7 @@ if TEAMCITY_BACKUP_FILE
     source 'database.properties.erb'
     mode TEAMCITY_READ_MODE
     owner TEAMCITY_USERNAME
-    group TEAMCITY_USERNAME
+    group TEAMCITY_GROUP
     variables({
                 url: TEAMCITY_DB_CONNECTION_URL,
                 username: TEAMCITY_DB_USERNAME,
@@ -125,7 +125,7 @@ template TEAMCITY_DATABASE_PROPS_PATH do
   source 'database.properties.erb'
   mode TEAMCITY_READ_MODE
   owner TEAMCITY_USERNAME
-  group TEAMCITY_USERNAME
+  group TEAMCITY_GROUP
   variables({
               url: TEAMCITY_DB_CONNECTION_URL,
               username: TEAMCITY_DB_USERNAME,
