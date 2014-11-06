@@ -91,6 +91,7 @@ template TEAMCITY_AGENT_PROPERTIES do
               name: TEAMCITY_AGENT_NAME
             })
   notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :delayed
+  not_if { ::File.exists?(TEAMCITY_AGENT_PROPERTIES) }
 end
 
 template TEAMCITY_INIT_LOCATION do
