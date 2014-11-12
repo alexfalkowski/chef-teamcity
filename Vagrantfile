@@ -1,47 +1,47 @@
 BOXES = [
   {
-    hostname: 'teamcity',
-    ip: '192.168.80.10',
-    ports: [8111, 5432],
-    role: 'server',
-    ram: 2048,
-    cpus: 2,
-    chef: {
-      json: {
-        'teamcity' => {
-          'password' => '$1$ByY03mDX$4pk9wp9bC19yB6pxSoVB81',
-          'server' => {
-            'backup' => 'file:////vagrant/tmp/TeamCity_Backup_20141024_051614.zip',
-            'database' => {
-              'username' => 'postgres',
-              'password' => '3175bce1d3201d16594cebf9d7eb3f9d',
-              'jar' => 'file:///usr/share/java/postgresql93-jdbc.jar',
-              'connection_url' => 'jdbc\:postgresql\:///postgres'
-            }
-          }
-        },
-        'postgresql' => {
-          'version' => '9.3',
-          'enable_pgdg_yum' => true,
-          'password' => {
-            'postgres' => '3175bce1d3201d16594cebf9d7eb3f9d'
-          },
-          'contrib' => {
-            'packages' => ['postgresql93-jdbc']
-          }
-        },
-        'java' => {
-          'install_flavor' => 'oracle',
-          'jdk_version' => 7,
-          'set_etc_environment' => true,
-          'oracle' => {
-            'accept_oracle_download_terms' => true
-          }
+  hostname: 'teamcity',
+  ip: '192.168.80.10',
+  ports: [8111, 5432],
+  role: 'server',
+  ram: 2048,
+  cpus: 2,
+  chef: {
+  json: {
+    'teamcity' => {
+      'password' => '$1$ByY03mDX$4pk9wp9bC19yB6pxSoVB81',
+      'server' => {
+        'backup' => 'file:///vagrant/tmp/TeamCity_Backup_20141106_054341.zip',
+        'database' => {
+          'username' => 'postgres',
+          'password' => '3175bce1d3201d16594cebf9d7eb3f9d',
+          'jar' => 'file:///usr/share/java/postgresql93-jdbc.jar',
+          'connection_url' => 'jdbc\:postgresql\:///postgres'
         }
+      }
+    },
+    'postgresql' => {
+      'version' => '9.3',
+      'enable_pgdg_yum' => true,
+      'password' => {
+        'postgres' => '3175bce1d3201d16594cebf9d7eb3f9d'
       },
-      run_list: %w(recipe[java] recipe[postgresql::contrib] recipe[chef-teamcity::server])
+      'contrib' => {
+        'packages' => ['postgresql93-jdbc']
+      }
+    },
+    'java' => {
+      'install_flavor' => 'oracle',
+      'jdk_version' => 7,
+      'set_etc_environment' => true,
+      'oracle' => {
+        'accept_oracle_download_terms' => true
+      }
     }
   },
+  run_list: %w(recipe[java] recipe[postgresql::contrib] recipe[chef-teamcity::server])
+}
+},
   {
     hostname: 'agent01',
     ip: '192.168.80.11',
