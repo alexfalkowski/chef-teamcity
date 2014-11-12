@@ -71,7 +71,15 @@ bash 'extract_teamcity' do
   not_if { ::File.exists?(TEAMCITY_PATH) }
 end
 
-[TEAMCITY_DATA_PATH, TEAMCITY_LIB_PATH, TEAMCITY_JDBC_PATH, TEAMCITY_CONFIG_PATH, TEAMCITY_BACKUP_PATH].each do |p|
+paths = [
+  TEAMCITY_DATA_PATH,
+  TEAMCITY_LIB_PATH,
+  TEAMCITY_JDBC_PATH,
+  TEAMCITY_CONFIG_PATH,
+  TEAMCITY_BACKUP_PATH
+]
+
+paths.each do |p|
   directory p do
     owner TEAMCITY_USERNAME
     group TEAMCITY_GROUP
@@ -89,7 +97,9 @@ end
 
 if TEAMCITY_BACKUP_FILE
   backup_file = ::File.basename(URI.parse(TEAMCITY_BACKUP_FILE).path).freeze
+  processed_backup_file = File.basename(backup_file, '.*').freeze
   backup_path = ::File.join(TEAMCITY_BACKUP_PATH, backup_file).freeze
+  processed_backup_path = ::File.join(TEAMCITY_BACKUP_PATH, processed_backup_file).freeze
   home_path = "/home/#{TEAMCITY_USERNAME}".freeze
   home_database_props = ::File.join(home_path, TEAMCITY_DATABASE_PROPS_NAME).freeze
 
@@ -98,7 +108,7 @@ if TEAMCITY_BACKUP_FILE
     owner TEAMCITY_USERNAME
     group TEAMCITY_GROUP
     mode TEAMCITY_READ_MODE
-    not_if { ::File.exists?(backup_path) }
+    not_if { ::File.exists?(processed_backup_path) }
   end
 
   template home_database_props do
@@ -115,11 +125,13 @@ if TEAMCITY_BACKUP_FILE
 
   bash 'restore' do
     user TEAMCITY_USERNAME
+    group TEAMCITY_GROUP
     code <<-EOH
       #{TEAMCITY_BIN_PATH}/maintainDB.sh restore -F #{backup_file} -A #{TEAMCITY_DATA_PATH} -T #{home_database_props}
       rm -f #{backup_path}
+      touch #{processed_backup_path}
     EOH
-    only_if { ::File.exists?(backup_path) }
+    not_if { ::File.exists?(processed_backup_path) }
   end
 end
 
