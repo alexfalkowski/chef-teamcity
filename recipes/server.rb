@@ -22,6 +22,7 @@ TEAMCITY_USERNAME = node['teamcity']['username'].freeze
 TEAMCITY_PASSWORD = node['teamcity']['password'].freeze
 TEAMCITY_SERVICE_NAME = node['teamcity']['service_name'].freeze
 TEAMCITY_GROUP = node['teamcity']['group'].freeze
+TEAMCITY_HOME_PATH = "/home/#{TEAMCITY_USERNAME}".freeze
 TEAMCITY_PATH = "/opt/TeamCity-#{TEAMCITY_VERSION}".freeze
 TEAMCITY_SRC_PATH = "#{TEAMCITY_PATH}.tar.gz".freeze
 TEAMCITY_INIT_LOCATION = "/etc/init.d/#{TEAMCITY_SERVICE_NAME}".freeze
@@ -48,6 +49,8 @@ TEAMCITY_JAR_NAME = ::File.basename(URI.parse(TEAMCITY_JAR_URI).path).freeze
 group TEAMCITY_GROUP
 
 user TEAMCITY_USERNAME do
+  supports manage_home: true
+  home TEAMCITY_HOME_PATH
   gid TEAMCITY_GROUP
   shell '/bin/bash'
   password TEAMCITY_PASSWORD
@@ -100,8 +103,7 @@ if TEAMCITY_BACKUP_FILE
   processed_backup_file = File.basename(backup_file, '.*').freeze
   backup_path = ::File.join(TEAMCITY_BACKUP_PATH, backup_file).freeze
   processed_backup_path = ::File.join(TEAMCITY_BACKUP_PATH, processed_backup_file).freeze
-  home_path = "/home/#{TEAMCITY_USERNAME}".freeze
-  home_database_props = ::File.join(home_path, TEAMCITY_DATABASE_PROPS_NAME).freeze
+  home_database_props = ::File.join(TEAMCITY_HOME_PATH, TEAMCITY_DATABASE_PROPS_NAME).freeze
 
   remote_file backup_path do
     source TEAMCITY_BACKUP_FILE
