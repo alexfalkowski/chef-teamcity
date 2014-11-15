@@ -39,6 +39,10 @@ TEAMCITY_AGENT_CONFIG_PATH = "#{TEAMCITY_PATH}/conf".freeze
 TEAMCITY_AGENT_PROPERTIES = "#{TEAMCITY_AGENT_CONFIG_PATH}/buildAgent.properties".freeze
 TEAMCITY_AGENT_EXECUTABLE = "#{TEAMCITY_PATH}/bin/agent.sh".freeze
 
+package 'git'
+package 'mercurial'
+package 'subversion'
+
 group TEAMCITY_GROUP
 
 user TEAMCITY_USERNAME do
