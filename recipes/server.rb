@@ -46,6 +46,10 @@ TEAMCITY_JAR_URI = node['teamcity']['server']['database']['jar'].freeze
 TEAMCITY_BACKUP_FILE = node['teamcity']['server']['backup']
 TEAMCITY_JAR_NAME = ::File.basename(URI.parse(TEAMCITY_JAR_URI).path).freeze
 
+package 'git'
+package 'mercurial'
+package 'subversion'
+
 group TEAMCITY_GROUP
 
 user TEAMCITY_USERNAME do
