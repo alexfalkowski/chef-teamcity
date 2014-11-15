@@ -22,6 +22,7 @@ TEAMCITY_USERNAME = node['teamcity']['username'].freeze
 TEAMCITY_PASSWORD = node['teamcity']['password'].freeze
 TEAMCITY_SERVICE_NAME = node['teamcity']['service_name'].freeze
 TEAMCITY_GROUP = node['teamcity']['group'].freeze
+TEAMCITY_HOME_PATH = "/home/#{TEAMCITY_USERNAME}".freeze
 TEAMCITY_PATH = "/opt/TeamCity-#{TEAMCITY_VERSION}".freeze
 TEAMCITY_SRC_PATH = "#{TEAMCITY_PATH}.zip".freeze
 TEAMCITY_INIT_LOCATION = "/etc/init.d/#{TEAMCITY_SERVICE_NAME}".freeze
@@ -41,6 +42,8 @@ TEAMCITY_AGENT_EXECUTABLE = "#{TEAMCITY_PATH}/bin/agent.sh".freeze
 group TEAMCITY_GROUP
 
 user TEAMCITY_USERNAME do
+  supports manage_home: true
+  home TEAMCITY_HOME_PATH
   gid TEAMCITY_GROUP
   shell '/bin/bash'
   password TEAMCITY_PASSWORD
