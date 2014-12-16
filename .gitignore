@@ -13,7 +13,6 @@ pkg/
 Berksfile.lock
 
 # Bundler
-Gemfile.lock
 bin/*
 .bundle/*
 
