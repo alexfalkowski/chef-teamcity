@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: chef-teamcity
-# Attributes:: teamcity
+# Recipe:: default
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,23 @@
 # limitations under the License.
 #
 
-default['teamcity']['version'] = '9.0'
-default['teamcity']['username'] = 'teamcity'
-default['teamcity']['group'] = 'teamcity'
-default['teamcity']['service_name'] = 'teamcity'
+TEAMCITY_USERNAME = node['teamcity']['username'].freeze
+TEAMCITY_PASSWORD = node['teamcity']['password'].freeze
+TEAMCITY_GROUP = node['teamcity']['group'].freeze
+TEAMCITY_HOME_PATH = "/home/#{TEAMCITY_USERNAME}".freeze
+
+include_recipe 'java'
+
+package 'git'
+package 'mercurial'
+package 'subversion'
+
+group TEAMCITY_GROUP
+
+user TEAMCITY_USERNAME do
+  supports manage_home: true
+  home TEAMCITY_HOME_PATH
+  gid TEAMCITY_GROUP
+  shell '/bin/bash'
+  password TEAMCITY_PASSWORD
+end
