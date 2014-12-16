@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-default['teamcity']['version'] = '8.1.5'
+default['teamcity']['version'] = '9.0'
 default['teamcity']['username'] = 'teamcity'
 default['teamcity']['group'] = 'teamcity'
 default['teamcity']['service_name'] = 'teamcity'
