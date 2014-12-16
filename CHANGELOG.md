@@ -23,3 +23,8 @@
 
 * Make sure we specify the creation of a home directory. - [14](https://github.com/alexfalkowski/chef-teamcity/pull/14).
 * Added git, mercurial and subversion.. - [15](https://github.com/alexfalkowski/chef-teamcity/pull/15).
+
+# 0.7.0
+
+* Removed duplication between agent and server. - [16](https://github.com/alexfalkowski/chef-teamcity/pull/16)
+* Added support for Teamcity 9.0 - [16](https://github.com/alexfalkowski/chef-teamcity/pull/16)
