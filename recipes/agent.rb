@@ -15,21 +15,18 @@
 # limitations under the License.
 #
 
-include_recipe 'java'
-
 TEAMCITY_VERSION = node['teamcity']['version'].freeze
 TEAMCITY_USERNAME = node['teamcity']['username'].freeze
-TEAMCITY_PASSWORD = node['teamcity']['password'].freeze
 TEAMCITY_SERVICE_NAME = node['teamcity']['service_name'].freeze
 TEAMCITY_GROUP = node['teamcity']['group'].freeze
 TEAMCITY_HOME_PATH = "/home/#{TEAMCITY_USERNAME}".freeze
 TEAMCITY_PATH = "/opt/TeamCity-#{TEAMCITY_VERSION}".freeze
-TEAMCITY_SRC_PATH = "#{TEAMCITY_PATH}.zip".freeze
 TEAMCITY_INIT_LOCATION = "/etc/init.d/#{TEAMCITY_SERVICE_NAME}".freeze
-TEAMCITY_PID_FILE = "#{TEAMCITY_PATH}/logs/buildAgent.pid".freeze
 TEAMCITY_EXECUTABLE_MODE = 0755
 TEAMCITY_READ_MODE = 0644
 
+TEAMCITY_SRC_PATH = "#{TEAMCITY_PATH}.zip".freeze
+TEAMCITY_PID_FILE = "#{TEAMCITY_PATH}/logs/buildAgent.pid".freeze
 TEAMCITY_AGENT_NAME = node['teamcity']['agent']['name'].freeze
 TEAMCITY_AGENT_SERVER_URI = node['teamcity']['agent']['server_uri'].freeze
 TEAMCITY_AGENT_FILE = 'buildAgent.zip'.freeze
@@ -39,19 +36,7 @@ TEAMCITY_AGENT_CONFIG_PATH = "#{TEAMCITY_PATH}/conf".freeze
 TEAMCITY_AGENT_PROPERTIES = "#{TEAMCITY_AGENT_CONFIG_PATH}/buildAgent.properties".freeze
 TEAMCITY_AGENT_EXECUTABLE = "#{TEAMCITY_PATH}/bin/agent.sh".freeze
 
-package 'git'
-package 'mercurial'
-package 'subversion'
-
-group TEAMCITY_GROUP
-
-user TEAMCITY_USERNAME do
-  supports manage_home: true
-  home TEAMCITY_HOME_PATH
-  gid TEAMCITY_GROUP
-  shell '/bin/bash'
-  password TEAMCITY_PASSWORD
-end
+include_recipe 'chef-teamcity::default'
 
 package 'unzip'
 
