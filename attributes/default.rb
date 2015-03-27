@@ -19,3 +19,22 @@ default['teamcity']['version'] = '9.0'
 default['teamcity']['username'] = 'teamcity'
 default['teamcity']['group'] = 'teamcity'
 default['teamcity']['service_name'] = 'teamcity'
+
+default['teamcity']['agent']['name'] = node['hostname']
+default['teamcity']['agent']['server_uri'] = nil
+default['teamcity']['agent']['own_address'] = nil
+default['teamcity']['agent']['port'] = 9090
+default['teamcity']['agent']['authorization_token'] = nil
+default['teamcity']['agent']['system_properties'] = {}
+default['teamcity']['agent']['env_properties'] = {}
+
+case node['platform']
+when 'windows'
+  default['teamcity']['agent']['work_dir'] = 'C:/teamcity/work'
+  default['teamcity']['agent']['temp_dir'] = 'C:/teamcity/tmp'
+  default['teamcity']['agent']['system_dir'] = 'C:/teamcity'
+else
+  default['teamcity']['agent']['work_dir'] = '../work'
+  default['teamcity']['agent']['temp_dir'] = '../temp'
+  default['teamcity']['agent']['system_dir'] = '../system'
+end

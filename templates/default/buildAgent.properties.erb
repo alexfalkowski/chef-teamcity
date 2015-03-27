@@ -12,14 +12,14 @@ serverUrl=<%= @server_uri %>
 name=<%= @name %>
 
 ## Container directory to create default checkout directories for the build configurations.
-workDir=../work
+workDir=<%= @work_dir %>
 
 ## Container directory for the temporary directories.
 ## Please note that the directory may be cleaned between the builds.
-tempDir=../temp
+tempDir=<%= @temp_dir %>
 
 ## Container directory for agent system files
-systemDir=../system
+systemDir=<%= @system_dir %>
 
 ######################################
 #   Optional Agent Properties        #
@@ -28,17 +28,19 @@ systemDir=../system
 ## The IP address which will be used by TeamCity server to connect to the build agent.
 ## If not specified, it is detected by build agent automatically,
 ## but if the machine has several network interfaces, automatic detection may fail.
-#ownAddress=<own IP address or server-accessible domain name>
+<% unless @own_address.nil? %>
+ownAddress=<%= @own_address %>
+<% end %>
 
 ## Optional
 ## A port that TeamCity server will use to connect to the agent.
 ## Please make sure that incoming connections for this port
 ## are allowed on the agent computer (e.g. not blocked by a firewall)
-ownPort=9090
+ownPort=<%= @own_port %>
 
 ## A token which is used to identify this agent on the TeamCity server.
 ## It is automatically generated and saved on the first agent connection to the server.
-authorizationToken=
+authorizationToken=<%= @authorization_token %>
 
 ######################################
 #   Default Build Properties         #
@@ -49,9 +51,11 @@ authorizationToken=
 ## More on file structure: http://java.sun.com/j2se/1.5.0/docs/api/java/util/Properties.html#load(java.io.InputStream)
 
 # Build Script Properties
-
-#system.exampleProperty=example Value
+<%- @system_properties.to_hash.sort.each do |key,value| %>
+system.<%= key %>=<%= value %>
+<%- end %>
 
 # Environment Variables
-
-#env.exampleEnvVar=example Env Value
+<%- @env_properties.to_hash.sort.each do |key,value| %>
+env.<%= key %>=<%= value %>
+<%- end %>
