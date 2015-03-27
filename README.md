@@ -8,6 +8,13 @@ Gives you the ability to create TeamCity server/agent
 * Redhat 6.5
 * Windows (agent only)
 
+## Depends
+
+* java
+* git
+* mercurial
+* subversion
+
 ## Attributes
 
 <table>
