@@ -28,7 +28,7 @@ systemDir=<%= @system_dir %>
 ## The IP address which will be used by TeamCity server to connect to the build agent.
 ## If not specified, it is detected by build agent automatically,
 ## but if the machine has several network interfaces, automatic detection may fail.
-<% unless @own_address.nil? %>
+<% if @own_address %>
 ownAddress=<%= @own_address %>
 <% end %>
 

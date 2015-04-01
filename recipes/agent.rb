@@ -18,7 +18,7 @@ include_recipe 'chef-teamcity::default'
 
 case node['platform']
 when 'windows'
-  include_recipe 'chef-teamcity::agent-windows'
+  include_recipe 'chef-teamcity::windows_agent'
 else
-  include_recipe 'chef-teamcity::agent-linux'
+  include_recipe 'chef-teamcity::linux_agent'
 end

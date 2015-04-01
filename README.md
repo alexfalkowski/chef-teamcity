@@ -117,13 +117,13 @@ Gives you the ability to create TeamCity server/agent
   <tr>
     <td><tt>['teamcity']['agent']['system_properties']</tt></td>
     <td>String</td>
-    <td>The URI of the TeamCity server.</td>
+    <td>Build Script Properties.</td>
     <td><tt></tt></td>
   </tr>
   <tr>
     <td><tt>['teamcity']['agent']['env_properties']</tt></td>
     <td>String</td>
-    <td>The URI of the TeamCity server.</td>
+    <td>Environment Variables.</td>
     <td><tt></tt></td>
   </tr>
   <tr>
