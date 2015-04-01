@@ -51,7 +51,7 @@ remote_file TEAMCITY_SRC_PATH do
   owner TEAMCITY_USERNAME
   group TEAMCITY_GROUP
   mode TEAMCITY_READ_MODE
-  not_if { ::File.exists?(TEAMCITY_PATH) }
+  not_if { ::File.exist?(TEAMCITY_PATH) }
 end
 
 bash 'extract_teamcity' do
@@ -61,7 +61,7 @@ bash 'extract_teamcity' do
     chown -R #{TEAMCITY_USERNAME}.#{TEAMCITY_GROUP} #{TEAMCITY_PATH}
     rm -f #{TEAMCITY_SRC_PATH}
   EOH
-  not_if { ::File.exists?(TEAMCITY_PATH) }
+  not_if { ::File.exist?(TEAMCITY_PATH) }
 end
 
 file TEAMCITY_AGENT_EXECUTABLE do
@@ -84,7 +84,7 @@ template TEAMCITY_AGENT_PROPERTIES do
   mode TEAMCITY_READ_MODE
   owner TEAMCITY_USERNAME
   group TEAMCITY_GROUP
-  variables({
+  variables(
               server_uri: TEAMCITY_AGENT_SERVER_URI,
               name: TEAMCITY_AGENT_NAME,
               work_dir: TEAMCITY_AGENT_WORK_DIR,
@@ -95,8 +95,8 @@ template TEAMCITY_AGENT_PROPERTIES do
               authorization_token: TEAMCITY_AGENT_AUTH_TOKEN,
               system_properties: TEAMCITY_AGENT_SYSTEM_PROPERTIES,
               env_properties: TEAMCITY_AGENT_ENV_PROPERTIES
-            })
-  not_if { ::File.exists?(TEAMCITY_AGENT_PROPERTIES) }
+            )
+  not_if { ::File.exist?(TEAMCITY_AGENT_PROPERTIES) }
   notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :delayed
 end
 
@@ -105,12 +105,12 @@ template TEAMCITY_INIT_LOCATION do
   mode TEAMCITY_EXECUTABLE_MODE
   owner 'root'
   group 'root'
-  variables({
+  variables(
               teamcity_user_name: TEAMCITY_USERNAME,
               teamcity_executable: TEAMCITY_AGENT_EXECUTABLE,
               teamcity_pidfile: TEAMCITY_PID_FILE,
               teamcity_service_name: TEAMCITY_SERVICE_NAME
-            })
+            )
   notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :delayed
 end
 

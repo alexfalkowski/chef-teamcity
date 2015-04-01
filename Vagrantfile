@@ -1,47 +1,47 @@
 BOXES = [
   {
-  hostname: 'teamcity',
-  ip: '192.168.80.10',
-  ports: [8111, 5432],
-  role: 'server',
-  ram: 2048,
-  cpus: 2,
-  chef: {
-  json: {
-    'teamcity' => {
-      'password' => '$1$ByY03mDX$4pk9wp9bC19yB6pxSoVB81',
-      'server' => {
-        'backup' => 'file:///vagrant/tmp/TeamCity_Backup_20141216_154715.zip',
-        'database' => {
-          'username' => 'postgres',
-          'password' => '3175bce1d3201d16594cebf9d7eb3f9d',
-          'jar' => 'file:///usr/share/java/postgresql93-jdbc.jar',
-          'connection_url' => 'jdbc\:postgresql\:///postgres'
+    hostname: 'teamcity',
+    ip: '192.168.80.10',
+    ports: [8111, 5432],
+    role: 'server',
+    ram: 2048,
+    cpus: 2,
+    chef: {
+      json: {
+        'teamcity' => {
+          'password' => '$1$ByY03mDX$4pk9wp9bC19yB6pxSoVB81',
+          'server' => {
+            'backup' => 'file:///vagrant/tmp/TeamCity_Backup_20141216_154715.zip',
+            'database' => {
+              'username' => 'postgres',
+              'password' => '3175bce1d3201d16594cebf9d7eb3f9d',
+              'jar' => 'file:///usr/share/java/postgresql93-jdbc.jar',
+              'connection_url' => 'jdbc\:postgresql\:///postgres'
+            }
+          }
+        },
+        'postgresql' => {
+          'version' => '9.3',
+          'enable_pgdg_yum' => true,
+          'password' => {
+            'postgres' => '3175bce1d3201d16594cebf9d7eb3f9d'
+          },
+          'contrib' => {
+            'packages' => ['postgresql93-jdbc']
+          }
+        },
+        'java' => {
+          'install_flavor' => 'oracle',
+          'jdk_version' => 7,
+          'set_etc_environment' => true,
+          'oracle' => {
+            'accept_oracle_download_terms' => true
+          }
         }
-      }
-    },
-    'postgresql' => {
-      'version' => '9.3',
-      'enable_pgdg_yum' => true,
-      'password' => {
-        'postgres' => '3175bce1d3201d16594cebf9d7eb3f9d'
       },
-      'contrib' => {
-        'packages' => ['postgresql93-jdbc']
-      }
-    },
-    'java' => {
-      'install_flavor' => 'oracle',
-      'jdk_version' => 7,
-      'set_etc_environment' => true,
-      'oracle' => {
-        'accept_oracle_download_terms' => true
-      }
+      run_list: %w(recipe[java] recipe[postgresql::contrib] recipe[chef-teamcity::server])
     }
   },
-  run_list: %w(recipe[java] recipe[postgresql::contrib] recipe[chef-teamcity::server])
-}
-},
   {
     hostname: 'agent01',
     ip: '192.168.80.11',
@@ -85,9 +85,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       node_config.vm.network :private_network, ip: node[:ip]
 
-      node[:ports].each { |port|
+      node[:ports].each do |port|
         node_config.vm.network :forwarded_port, guest: port, host: port
-      }
+      end
 
       node_config.vm.provider :virtualbox do |box|
         box.customize ['modifyvm', :id, '--name', node[:hostname]]
