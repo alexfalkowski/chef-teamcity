@@ -60,7 +60,7 @@ bash 'extract_teamcity' do
     mv #{TEAMCITY_PATH}/*/* #{TEAMCITY_PATH}/
     chown -R #{TEAMCITY_USERNAME}.#{TEAMCITY_GROUP} #{TEAMCITY_PATH}
   EOH
-  not_if { ::File.exists?(TEAMCITY_PATH) }
+  not_if { ::File.exist?(TEAMCITY_PATH) }
 end
 
 paths = [
@@ -99,7 +99,7 @@ if TEAMCITY_BACKUP_FILE
     owner TEAMCITY_USERNAME
     group TEAMCITY_GROUP
     mode TEAMCITY_READ_MODE
-    not_if { ::File.exists?(processed_backup_path) }
+    not_if { ::File.exist?(processed_backup_path) }
   end
 
   template home_database_props do
@@ -107,11 +107,11 @@ if TEAMCITY_BACKUP_FILE
     mode TEAMCITY_READ_MODE
     owner TEAMCITY_USERNAME
     group TEAMCITY_GROUP
-    variables({
+    variables(
                 url: TEAMCITY_DB_CONNECTION_URL,
                 username: TEAMCITY_DB_USERNAME,
-                password: TEAMCITY_DB_PASSWORD,
-              })
+                password: TEAMCITY_DB_PASSWORD
+              )
   end
 
   bash 'restore' do
@@ -122,7 +122,7 @@ if TEAMCITY_BACKUP_FILE
       rm -f #{backup_path}
       touch #{processed_backup_path}
     EOH
-    not_if { ::File.exists?(processed_backup_path) }
+    not_if { ::File.exist?(processed_backup_path) }
   end
 end
 
@@ -131,11 +131,11 @@ template TEAMCITY_DATABASE_PROPS_PATH do
   mode TEAMCITY_READ_MODE
   owner TEAMCITY_USERNAME
   group TEAMCITY_GROUP
-  variables({
+  variables(
               url: TEAMCITY_DB_CONNECTION_URL,
               username: TEAMCITY_DB_USERNAME,
-              password: TEAMCITY_DB_PASSWORD,
-            })
+              password: TEAMCITY_DB_PASSWORD
+            )
   notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :delayed
 end
 
@@ -144,13 +144,13 @@ template TEAMCITY_INIT_LOCATION do
   mode TEAMCITY_EXECUTABLE_MODE
   owner 'root'
   group 'root'
-  variables({
+  variables(
               teamcity_user_name: TEAMCITY_USERNAME,
               teamcity_server_executable: TEAMCITY_SERVER_EXECUTABLE,
               teamcity_data_path: TEAMCITY_DATA_PATH,
               teamcity_pidfile: TEAMCITY_PID_FILE,
               teamcity_service_name: TEAMCITY_SERVICE_NAME
-            })
+            )
   notifies :restart, "service[#{TEAMCITY_SERVICE_NAME}]", :delayed
 end
 

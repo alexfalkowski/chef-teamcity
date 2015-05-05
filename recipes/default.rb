@@ -22,16 +22,22 @@ TEAMCITY_HOME_PATH = "/home/#{TEAMCITY_USERNAME}".freeze
 
 include_recipe 'java'
 
-package 'git'
-package 'mercurial'
-package 'subversion'
+include_recipe 'git'
+include_recipe 'mercurial'
+include_recipe 'subversion'
 
-group TEAMCITY_GROUP
+if node['platform'] != 'windows'
+  package 'git'
+  package 'mercurial'
+  package 'subversion'
 
-user TEAMCITY_USERNAME do
-  supports manage_home: true
-  home TEAMCITY_HOME_PATH
-  gid TEAMCITY_GROUP
-  shell '/bin/bash'
-  password TEAMCITY_PASSWORD
+  group TEAMCITY_GROUP
+
+  user TEAMCITY_USERNAME do
+    supports manage_home: true
+    home TEAMCITY_HOME_PATH
+    gid TEAMCITY_GROUP
+    shell '/bin/bash'
+    password TEAMCITY_PASSWORD
+  end
 end
