@@ -34,7 +34,7 @@ if node['platform'] != 'windows'
   group TEAMCITY_GROUP
 
   user TEAMCITY_USERNAME do
-    supports manage_home: true
+    manage_home true
     home TEAMCITY_HOME_PATH
     gid TEAMCITY_GROUP
     shell '/bin/bash'
