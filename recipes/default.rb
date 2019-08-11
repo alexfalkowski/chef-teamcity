@@ -23,13 +23,9 @@ TEAMCITY_HOME_PATH = "/home/#{TEAMCITY_USERNAME}".freeze
 include_recipe 'java'
 
 include_recipe 'git'
-include_recipe 'mercurial'
-include_recipe 'subversion'
 
 if node['platform'] != 'windows'
   package 'git'
-  package 'mercurial'
-  package 'subversion'
 
   group TEAMCITY_GROUP
 
