@@ -1,3 +1,7 @@
+# 0.1.2
+
+- Remove subversion and mercurial
+
 # 0.1.1
 
 * Updated default.rb to work with Chef Client 13
